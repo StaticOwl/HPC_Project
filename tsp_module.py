@@ -20,3 +20,7 @@ class RoutingOptimizer:
     # def optimize_routes_tsp(self,):
     #     results = optimize_routes(self.distance_matrix, self.depot)
     #     return results
+
+routing = RoutingOptimizer()
+routing.add_address('Munich+Germany')
+print("hey")

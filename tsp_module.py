@@ -1,5 +1,6 @@
 from distance_api.distance_matrix import create_distance_matrix
 from constants import api_key
+# api_key = "1"
 
 class RoutingOptimizer:
     def __init__(self,addresses = [],depot= 0, api_key = api_key):
@@ -23,4 +24,10 @@ class RoutingOptimizer:
 
 routing = RoutingOptimizer()
 routing.add_address('Munich+Germany')
+routing.add_address('Dresden+Germany')
+routing.add_address('Saarland+Germany')
+routing.add_address('Sluttgart+Germany')
+routing.addresses
+routing.create_distance_matrix()
+
 print("hey")

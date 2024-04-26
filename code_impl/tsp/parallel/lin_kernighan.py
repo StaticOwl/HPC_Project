@@ -53,12 +53,12 @@ def lin_kernighan_kernel(d_matrix, tour, best_tour, best_length, iterations):
                 global_best_move = (shared_moves[0, i], shared_moves[1, i])
         
                 
-        # Apply the best move to update the tour if it improves
-        # if global_best_length < best_length:
-        #     tour[global_best_move[0]], tour[global_best_move[1]] = tour[global_best_move[1]], tour[global_best_move[0]]
-        #     best_length = global_best_length
-        #     for i in range(len(tour)):
-        #         best_tour[i] = tour[i]
+        #Apply the best move to update the tour if it improves
+        if global_best_length < best_length:
+            tour[global_best_move[0]], tour[global_best_move[1]] = tour[global_best_move[1]], tour[global_best_move[0]]
+            best_length = global_best_length
+            for i in range(len(tour)):
+                best_tour[i] = tour[i]
 
     # Wait for all threads to finish
     cuda.syncthreads()

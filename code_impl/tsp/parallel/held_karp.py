@@ -1,12 +1,8 @@
 # Somewhat working. But not as parallel as it should be.
 
-from numba import njit, prange, threading_layer, config, set_num_threads
-from numba.typed import List
-from numba import types
+from numba import njit, prange, config
 import numpy as np
-import random
-import sys
-import numba
+
 config.THREADING_LAYER = 'omp'
 
 @njit
@@ -23,6 +19,17 @@ def get_parent(memory, bits, k):
         return memory[(bits, k)]
     else:
         return (np.inf, -1)
+    
+@njit
+def manual_argmin(array):
+    min_value = np.inf
+    min_index = -1
+    for i in range(len(array)):
+        # Assume the first element of the tuple holds the value to compare
+        if array[i][0] < min_value:
+            min_value = array[i][0]
+            min_index = i
+    return min_index
 
 @njit(parallel=True, debug=True)
 def held_karp(dists):
@@ -56,23 +63,9 @@ def held_karp(dists):
     res2 = []
     for k in range(1, n):
         opt, parent = get_parent(memory, bits, k)
-        res2.append((opt + dists[k, 0], np.int64(k)))  # Ensure consistent data types
+        res2.append((opt + dists[k, 0], np.int64(k))) 
         
-    print(res2)
-    # res2 = np.array(res2, dtype=np.int64)
-    #  >>> setitem(array(float64, 1d, C), int64, Tuple(float64, int64))
+    idx = manual_argmin(res2)
+    opt, last = res2[idx]
 
-    # idx = np.argmin(res2[:, 0])
-    # opt, parent = get_parent(memory, bits, np.int64(res[idx, 1]))
-
-    # # Reconstruct the path
-    # path = []
-    # path.append(0)
-    # while parent != -1:
-    #     path.append(parent)
-    #     bits &= ~(1 << parent)
-    #     _, parent = get_parent(memory, bits, parent)
-
-    # return opt, path[::-1]
-    
-    return None, None
+    return opt, last

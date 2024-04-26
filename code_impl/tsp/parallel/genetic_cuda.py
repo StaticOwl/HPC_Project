@@ -26,7 +26,7 @@ def run_genetic_algorithm(distance_matrix, num_generations, population_size, thr
     distance_matrix_device = cuda.to_device(distance_matrix)
     fitness_scores_device = cuda.device_array(population_size, dtype=np.float32)
 
-    blocks_per_grid = math.ceil(population_size / threads_per_block)
+    blocks_per_grid = math.ceil(population_size / threads_per_block) # Data Segmentation
     
     start_event.record()
 

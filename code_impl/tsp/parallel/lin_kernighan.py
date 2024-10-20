@@ -1,11 +1,13 @@
+import math
+
 import numpy as np
 from numba import cuda
 # from numba.types import int32, float32
 from numba.cuda.types import types
-import math
 
 # Define a large float value to represent infinity
 INF = 1e30
+
 
 # Define the Lin-Kernighan heuristic kernel
 @cuda.jit
@@ -45,15 +47,14 @@ def lin_kernighan_kernel(d_matrix, tour, best_tour, best_length, iterations):
 
     # Reduce to find the global best move and its delta
     if idx == 0:
-        global_best_length:types.float64 = INF
+        global_best_length: types.float64 = INF
         global_best_move = (-1, -1)
         for i in range(len(tour)):
             if shared_deltas[i] < global_best_length:
                 global_best_length = shared_deltas[i]
                 global_best_move = (shared_moves[0, i], shared_moves[1, i])
-        
-                
-        #Apply the best move to update the tour if it improves
+
+        # Apply the best move to update the tour if it improves
         if global_best_length < best_length:
             tour[global_best_move[0]], tour[global_best_move[1]] = tour[global_best_move[1]], tour[global_best_move[0]]
             best_length = global_best_length
@@ -62,6 +63,7 @@ def lin_kernighan_kernel(d_matrix, tour, best_tour, best_length, iterations):
 
     # Wait for all threads to finish
     cuda.syncthreads()
+
 
 # Evaluate the change in tour length if a 2-opt move is applied
 @cuda.jit(device=True)
@@ -83,6 +85,7 @@ def evaluate_move(d_matrix, tour, move):
 
     return delta
 
+
 # Lin-Kernighan heuristic function
 def lin_kernighan(d_matrix, iterations=1000):
     # Initialize the tour with a simple greedy algorithm
@@ -103,13 +106,15 @@ def lin_kernighan(d_matrix, iterations=1000):
 
     # Run Lin-Kernighan kernel
     for _ in range(iterations):
-        lin_kernighan_kernel[blocks_per_grid, threads_per_block](d_d_matrix, d_tour, d_best_tour, d_best_length, iterations)
+        lin_kernighan_kernel[blocks_per_grid, threads_per_block](d_d_matrix, d_tour, d_best_tour, d_best_length,
+                                                                 iterations)
 
     # Copy results back to host
     best_tour = d_best_tour.copy_to_host()
     best_length = d_best_length.copy_to_host()
 
     return best_tour, best_length
+
 
 # Function to calculate the length of a tour
 def calculate_tour_length(d_matrix, tour):

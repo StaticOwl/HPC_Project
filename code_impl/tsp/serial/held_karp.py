@@ -1,6 +1,4 @@
 from itertools import combinations as comb
-import random
-import sys
 
 
 def held_karp(dists):
@@ -36,7 +34,7 @@ def held_karp(dists):
                     res.append((memory[(prev, m)][0] + dists[m][k], m))
                 memory[(bits, k)] = min(res)
 
-    bits = (2**n - 1) - 1
+    bits = (2 ** n - 1) - 1
 
     res = []
     for k in range(1, n):

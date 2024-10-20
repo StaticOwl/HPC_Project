@@ -1,9 +1,10 @@
 # Somewhat working. But not as parallel as it should be.
 
-from numba import njit, prange, config
 import numpy as np
+from numba import njit, prange, config
 
 config.THREADING_LAYER = 'omp'
+
 
 @njit
 def count_set_bits(x):
@@ -13,13 +14,15 @@ def count_set_bits(x):
         x >>= 1
     return count
 
+
 @njit
 def get_parent(memory, bits, k):
     if (bits, k) in memory:
         return memory[(bits, k)]
     else:
         return (np.inf, -1)
-    
+
+
 @njit
 def manual_argmin(array):
     min_value = np.inf
@@ -30,6 +33,7 @@ def manual_argmin(array):
             min_value = array[i][0]
             min_index = i
     return min_index
+
 
 @njit(parallel=True, debug=True)
 def held_karp(dists):
@@ -56,15 +60,14 @@ def held_karp(dists):
                             res = np.array(res, dtype=np.int64)
                             idx = np.argmin(res[:, 0])
                             memory[(bits, k)] = (res[idx, 0], res[idx, 1])
-                            
 
     # Find the optimal cost and reconstruct the optimal path
     bits = (1 << n) - 2
     res2 = []
     for k in range(1, n):
         opt, parent = get_parent(memory, bits, k)
-        res2.append((opt + dists[k, 0], np.int64(k))) 
-        
+        res2.append((opt + dists[k, 0], np.int64(k)))
+
     idx = manual_argmin(res2)
     opt, last = res2[idx]
 

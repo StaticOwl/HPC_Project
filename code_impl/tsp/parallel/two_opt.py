@@ -1,11 +1,12 @@
 # This is so far the fastest implementation. But it is different than help-karp. Also this is giving different output different times.
 
-from numba import njit, config, prange, set_num_threads
 import numpy as np
+from numba import njit, config, prange, set_num_threads
 
 config.THREADING_LAYER = 'omp'
 
 set_num_threads(14)
+
 
 @njit
 def calculate_distance(tour, distance_matrix):
@@ -14,6 +15,7 @@ def calculate_distance(tour, distance_matrix):
         total_distance += distance_matrix[tour[i], tour[i + 1]]
     total_distance += distance_matrix[tour[-1], tour[0]]  # Complete the tour
     return total_distance
+
 
 @njit(parallel=True)
 def get_tour(tour, distance_matrix):
@@ -34,14 +36,15 @@ def get_tour(tour, distance_matrix):
                     improvement = True
     return tour
 
+
 @njit(parallel=True)
 def two_opt(dists):
     init_tour = np.arange(dists.shape[0])
     np.random.shuffle(init_tour)
-    
+
     print("Initial tour:", init_tour)
-    
+
     optimized_tour = get_tour(init_tour, dists)
     optimized_distance = calculate_distance(optimized_tour, dists)
-    
+
     return optimized_distance, optimized_tour

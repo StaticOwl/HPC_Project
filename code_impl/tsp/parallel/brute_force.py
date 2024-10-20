@@ -1,6 +1,8 @@
-from numba import njit, prange
-import numpy as np
 import sys
+
+import numpy as np
+from numba import njit, prange
+
 
 @njit(parallel=True)
 def brute_force_tsp(distance_matrix):
@@ -17,6 +19,7 @@ def brute_force_tsp(distance_matrix):
         tsp_util(distance_matrix, visited, tour, 1, 0, min_distance, best_tour)
 
     return best_tour, min_distance
+
 
 @njit(parallel=True)
 def tsp_util(distance_matrix, visited, tour, depth, cur_distance, min_distance, best_tour):

@@ -1,6 +1,8 @@
-from numba import cuda
-import numpy as np
 import math
+
+import numpy as np
+from numba import cuda
+
 
 @cuda.jit
 def calculate_distances(tours, distance_matrix, distances):
@@ -10,13 +12,15 @@ def calculate_distances(tours, distance_matrix, distances):
     tour = tours[idx]
     total_distance = 0.0
     for i in range(1, tour.shape[0]):
-        total_distance += distance_matrix[tour[i-1], tour[i]]
+        total_distance += distance_matrix[tour[i - 1], tour[i]]
     total_distance += distance_matrix[tour[-1], tour[0]]
     distances[idx] = total_distance
+
 
 def generate_permutations(num_cities):
     import itertools
     return np.array(list(itertools.permutations(range(num_cities))))
+
 
 def run_cuda_tsp(distance_matrix):
     all_tours = generate_permutations(distance_matrix.shape[0])

@@ -1,8 +1,10 @@
-#Genetic Algorithm for TSP using CUDA. Working as expected. And very fast.
+# Genetic Algorithm for TSP using CUDA. Working as expected. And very fast.
 
-from numba import cuda
-import numpy as np
 import math
+
+import numpy as np
+from numba import cuda
+
 
 @cuda.jit
 def evaluate_fitness(tours, distance_matrix, fitness_scores):
@@ -11,11 +13,12 @@ def evaluate_fitness(tours, distance_matrix, fitness_scores):
         tour = tours[idx]
         total_distance = 0.0
         for i in range(1, tour.shape[0]):
-            total_distance += distance_matrix[tour[i-1], tour[i]]
+            total_distance += distance_matrix[tour[i - 1], tour[i]]
         total_distance += distance_matrix[tour[-1], tour[0]]
         fitness_scores[idx] = 1.0 / total_distance
 
-def run_genetic_algorithm(distance_matrix, num_generations, population_size, threads_per_block = 64):
+
+def run_genetic_algorithm(distance_matrix, num_generations, population_size, threads_per_block=64):
     start_event = cuda.event()
     end_event = cuda.event()
     num_cities = distance_matrix.shape[0]
@@ -26,16 +29,17 @@ def run_genetic_algorithm(distance_matrix, num_generations, population_size, thr
     distance_matrix_device = cuda.to_device(distance_matrix)
     fitness_scores_device = cuda.device_array(population_size, dtype=np.float32)
 
-    blocks_per_grid = math.ceil(population_size / threads_per_block) # Data Segmentation
-    
+    blocks_per_grid = math.ceil(population_size / threads_per_block)  # Data Segmentation
+
     start_event.record()
 
     for _ in range(num_generations):
-        evaluate_fitness[blocks_per_grid, threads_per_block](tours_device, distance_matrix_device, fitness_scores_device)
-        
+        evaluate_fitness[blocks_per_grid, threads_per_block](tours_device, distance_matrix_device,
+                                                             fitness_scores_device)
+
     end_event.record()
     end_event.synchronize()
-    
+
     print("Time to evaluate fitness:", cuda.event_elapsed_time(start_event, end_event), "ms")
 
     fitness_scores = fitness_scores_device.copy_to_host()

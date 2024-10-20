@@ -1,6 +1,8 @@
-import numpy as np
-import time
 import math
+import time
+
+import numpy as np
+
 
 def evaluate_fitness(tours, distance_matrix):
     num_tours = tours.shape[0]
@@ -9,15 +11,16 @@ def evaluate_fitness(tours, distance_matrix):
         tour = tours[idx]
         total_distance = 0.0
         for i in range(1, len(tour)):
-            total_distance += distance_matrix[tour[i-1], tour[i]]
+            total_distance += distance_matrix[tour[i - 1], tour[i]]
         total_distance += distance_matrix[tour[-1], tour[0]]
         fitness_scores[idx] = 1.0 / total_distance
     return fitness_scores
 
+
 def run_genetic_algorithm(distance_matrix, num_generations, population_size):
     num_cities = distance_matrix.shape[0]
     population = np.array([np.random.permutation(num_cities) for _ in range(population_size)])
-    
+
     start_time = time.time()
 
     for _ in range(num_generations):

@@ -1,6 +1,8 @@
-import numpy as np
-import sys
 import random
+import sys
+
+import numpy as np
+
 
 def generate_distances(n):
     dists = np.zeros((n, n), dtype=np.float64)
@@ -10,6 +12,7 @@ def generate_distances(n):
             dists[i, j] = dist
             dists[j, i] = dist
     return dists
+
 
 def read_distances(filename):
     """
@@ -30,10 +33,12 @@ def read_distances(filename):
                 dists.append(row)
     return np.array(dists, dtype=np.float64)
 
+
 def get_argv(index, default):
     if len(sys.argv) > index:
         return sys.argv[index]
     return default
+
 
 def data_handler(input_data):
     if input_data.endswith('.csv'):
@@ -42,5 +47,5 @@ def data_handler(input_data):
     else:
         n = int(input_data)
         dists = generate_distances(n)
-        
+
     return dists

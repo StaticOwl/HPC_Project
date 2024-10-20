@@ -1,5 +1,7 @@
-import numpy as np
 import itertools
+
+import numpy as np
+
 
 def calculate_distances(tours, distance_matrix):
     num_tours = tours.shape[0]
@@ -8,13 +10,15 @@ def calculate_distances(tours, distance_matrix):
         tour = tours[idx]
         total_distance = 0.0
         for i in range(1, len(tour)):
-            total_distance += distance_matrix[tour[i-1], tour[i]]
+            total_distance += distance_matrix[tour[i - 1], tour[i]]
         total_distance += distance_matrix[tour[-1], tour[0]]
         distances[idx] = total_distance
     return distances
 
+
 def generate_permutations(num_cities):
     return np.array(list(itertools.permutations(range(num_cities))))
+
 
 def run_tsp(distance_matrix):
     all_tours = generate_permutations(distance_matrix.shape[0])
